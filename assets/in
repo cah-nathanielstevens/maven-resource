@@ -32,7 +32,7 @@ if [ "$debug" = "true" ]; then
 fi
 
 release_url=$(jq -r '.source.url //empty' < $payload)
-snapshot_url=$(jq -r '.source.snapshot_url //empty' < $payload)
+isSnapshot=$(jq -r '.source.isSnapshot //empty' < $payload)
 artifact=$(jq -r '.source.artifact //empty' < $payload)
 version=$(jq -r '.version.version //empty' < $payload)
 username=$(jq -r '.source.username //empty' < $payload)
@@ -41,8 +41,8 @@ skip_cert_check=$(jq -r '.source.skip_cert_check //empty' < $payload)
 repository_cert=$(jq -r '.source.repository_cert //empty' < $payload)
 
 # TODO: Add more error checking
-if [ -z "$release_url" ] && [ -z "$snapshot_url" ] ; then
-  echo "[ERROR] invalid payload (must specify url or snapshot_url)"
+if [ -z "$release_url" ] ; then
+  echo "[ERROR] invalid payload (must specify url)"
   exit 1
 fi
 
@@ -84,12 +84,7 @@ elif [ -n "$repository_cert" ]; then
   MAVEN_OPTS="$MAVEN_OPTS -Djavax.net.ssl.trustStore=$working/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
 fi
 
-# test for 1.0.0-SNAPSHOT and for 1.0.0-20170328.031519-19
-isSnapshot=false
-[[ "$version" = *-SNAPSHOT ]] || echo "$version" | grep -oEq "[0-9]{8}\.[0-9]{6}-[0-9]{1,}" && isSnapshot=true
-
 url=$release_url
-[ -n "$snapshot_url" ] && [ "$isSnapshot" = true ] && url=$snapshot_url
 
 args=
 args="$args -Dartifact=$artifactItem"
