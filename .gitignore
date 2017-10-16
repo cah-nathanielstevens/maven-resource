@@ -1,1 +1,5 @@
 itest/nexus/keystore.jks
+
+# IntelliJ
+*.iml
+.idea/

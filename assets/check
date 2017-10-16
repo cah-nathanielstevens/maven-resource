@@ -62,8 +62,7 @@ if [ "$isSnapshot" = "true" ]; then
 fi
 
 url=$release_url
-if [[ "$version" = *-SNAPSHOT ]]; then
-  [ -n "$snapshot_url" ] && url=$snapshot_url
+if [ "$isSnapshot" = "true" ]; then
   metadataUrl="$url/${groupId//.//}/$artifactId/$version/maven-metadata.xml"
 else
   metadataUrl="$url/${groupId//.//}/$artifactId/maven-metadata.xml"

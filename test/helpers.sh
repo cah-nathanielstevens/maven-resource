@@ -212,7 +212,6 @@ get_artifact() {
 deploy_without_pom_without_credentials() {
 
   local url=$1
-  local snapshot_url=${4:-''}
   local version=$2
   local src=$3
 
@@ -231,18 +230,13 @@ deploy_without_pom_without_credentials() {
 
   # Mock the pom.xml
   local pom=build-output/pom.xml
-  if [[ "$version" = *-SNAPSHOT ]]; then
-    cp $test_dir/resources/pom-release.xml $src/$pom
-  else
-    cp $test_dir/resources/pom-snapshot.xml $src/$pom
-  fi
+  cp $test_dir/resources/pom-snapshot.xml $src/$pom
 
   jq -n \
   --arg file "$file" \
   --arg pom "$pom" \
   --arg version_file "$version_file" \
   --arg url "$url" \
-  --arg snapshot_url "$snapshot_url" \
   --arg artifact "$artifact" \
   '{
     params: {
@@ -252,7 +246,6 @@ deploy_without_pom_without_credentials() {
     },
     source: {
       url: $url,
-      snapshot_url: $snapshot_url,
       artifact: $artifact
     }
   }' | $resource_dir/out "$src" | tee /dev/stderr
