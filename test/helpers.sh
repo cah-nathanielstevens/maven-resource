@@ -230,7 +230,7 @@ deploy_without_pom_without_credentials() {
 
   # Mock the pom.xml
   local pom=build-output/pom.xml
-  cp $test_dir/resources/pom-snapshot.xml $src/$pom
+  cp $test_dir/resources/pom-release.xml $src/$pom
 
   jq -n \
   --arg file "$file" \

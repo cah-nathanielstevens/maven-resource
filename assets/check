@@ -62,12 +62,13 @@ if [ "$isSnapshot" = "true" ]; then
 fi
 
 url=$release_url
-if [ "$isSnapshot" = "true" ]; then
-  metadataUrl="$url/${groupId//.//}/$artifactId/$version/maven-metadata.xml"
-else
+#if [ "$isSnapshot" = "true" ]; then
+#  metadataUrl="$url/${groupId//.//}/$artifactId/$version/maven-metadata.xml"
+#else
   metadataUrl="$url/${groupId//.//}/$artifactId/maven-metadata.xml"
-fi
-
+#fi
+echo $metadataUrl
+exit
 metadata=$(curl --fail --silent --show-error $cert $auth $metadataUrl)
 if [ $? -ne 0 ]; then
   echo "[ERROR] failed to download maven-metadata.xml from: $metadataUrl"
