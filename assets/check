@@ -58,17 +58,12 @@ elif [ -n "$repository_cert" ]; then
 fi
 
 if [ "$isSnapshot" = "true" ]; then
-  version="${version}-SNAPSHOT"
+  version="${version}"
 fi
 
 url=$release_url
-#if [ "$isSnapshot" = "true" ]; then
-#  metadataUrl="$url/${groupId//.//}/$artifactId/$version/maven-metadata.xml"
-#else
-  metadataUrl="$url/${groupId//.//}/$artifactId/maven-metadata.xml"
-#fi
-echo $metadataUrl
-exit
+metadataUrl="$url/${groupId//.//}/$artifactId/maven-metadata.xml"
+
 metadata=$(curl --fail --silent --show-error $cert $auth $metadataUrl)
 if [ $? -ne 0 ]; then
   echo "[ERROR] failed to download maven-metadata.xml from: $metadataUrl"
@@ -76,9 +71,7 @@ if [ $? -ne 0 ]; then
 fi
 
 declare -a versions=( )
-if [[ "$version" = *-SNAPSHOT ]]; then
-  versions[1]=$(echo $metadata | xmllint --xpath "/metadata/versioning/snapshotVersions/snapshotVersion[extension='$packaging']/value/text()" - 2>/dev/null)
-elif [ "$version" = "latest" ] || [ -z "$version" ]; then
+if [ "$version" = "latest" ] || [ -z "$version" ]; then
   versions[1]=$(echo $metadata | xmllint --xpath "/metadata/versioning/versions/version[last()]/text()" - 2>/dev/null)
 else
   itemsCount=$(echo $metadata | xmllint --xpath 'count(/metadata/versioning/versions/version)' - 2>/dev/null)
@@ -94,6 +87,10 @@ else
       versions[$i]=$current
     fi
   done
+
+  if [ "$found" = false ]; then
+     versions[1]=$(echo $metadata | xmllint --xpath "/metadata/versioning/versions/version[last()]/text()" - 2>/dev/null)
+  fi
 fi
 
 printf "%s\n" "${versions[@]}" | sed 's/.*/{ "version": "&" }/' | jq --slurp . >&3

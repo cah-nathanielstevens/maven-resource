@@ -7,4 +7,4 @@ ADD test/ /opt/resource/test/
 ADD itest/ /opt/resource/itest/
 
 # Run tests (also pre-seeds .m2/repository)
-#RUN /opt/resource/test/all.sh
+RUN /opt/resource/test/all.sh
